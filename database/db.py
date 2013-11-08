@@ -3,6 +3,10 @@ from sqlalchemy import DateTime, Column, String, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker
 
+"""
+Script used for initiating database connection.
+"""
+
 DATABASE_LOCATION = 'lite.db'
 
 engine = create_engine('sqlite:///%s' % DATABASE_LOCATION)
