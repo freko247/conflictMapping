@@ -3,6 +3,7 @@ from db import Base
 
 
 class Tweet(Base):
+    """Database model for tweet table"""
     __tablename__ = 'tweet'
     tweet_id = Column(String, primary_key=True)
     tweet_language = Column(String)

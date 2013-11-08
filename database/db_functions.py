@@ -9,7 +9,7 @@ db.init_db()
 
 
 def generateRowDict(data):
-    '''Generator that returns data row as dictionary'''
+    """Generator that returns data row as dictionary"""
     for row in data:
         row_dict = {}
         for key, value in row:
@@ -18,7 +18,7 @@ def generateRowDict(data):
 
 
 def saveTweets(tweets):
-    '''Function that stores tweets in database'''
+    """Function that stores tweets in database"""
     # TODO: Nose tests
     tweet = Tweet()
     for row_dict in generateRowDict(tweets):
@@ -38,8 +38,8 @@ def saveTweets(tweets):
 
 
 def main():
-    '''Main function used when running script independently.
-    Test data 'tweets' has expected data format'''
+    """Main function used when running script independently.
+    Test data 'tweets' has expected data format"""
     # try:
     #     import config
     #     # TODO: Fix relative import config is in ../config/config.py

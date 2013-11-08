@@ -9,16 +9,16 @@ knn = KNN()
 
 
 def getSearchWords():
-    '''Function that returns list of search words'''
+    """Function that returns list of search words"""
     # Test data, we will use synonyms for war (found in nltk word net)
     words = ['war', 'conflict', 'jihad', ]
     return words
 
 
 def getCountries():
-    '''Function that returns list of countries
+    """Function that returns list of countries
        downloaded from static url.
-    '''
+    """
     url = r'https://raw.github.com/umpirsky/' \
           'country-list/master/country/cldr/en/country.csv'
     response = urllib2.urlopen(url)
