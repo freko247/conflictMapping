@@ -5,6 +5,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 
 """
 Script used for initiating database connection.
+Sqlite database named lite.db is created by default.
 """
 
 DATABASE_LOCATION = 'lite.db'
