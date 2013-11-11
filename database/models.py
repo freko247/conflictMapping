@@ -12,3 +12,5 @@ class Tweet(Base):
     tweet_url = Column(String,)
     tweet_text = Column(String,)
     tweet_date = Column(DateTime,)
+    tweet_country = Column(String,)
+    tweet_search_word = Column(String,)
