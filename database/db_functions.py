@@ -2,7 +2,6 @@
 """
 Module defines methods for storing data in database.
 """
-from hashlib import sha1
 from datetime import datetime
 from models import Tweet
 import db
@@ -13,11 +12,10 @@ db.init_db()
 
 def saveTweets(tweets):
     """Function that stores tweets in database"""
-    # TODO: Nose tests
     tweet = Tweet()
     for row_dict in tweets:
         string_date = row_dict.get('date')
-        tweet_date = datetime.strptime(string_date[:19]+string_date[-5:],
+        tweet_date = datetime.strptime(string_date[:19] + string_date[-5:],
                                        '%a %b %d %H:%M:%S %Y'
                                        )
         tweet.tweet_id = row_dict.get('id')
