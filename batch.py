@@ -32,6 +32,7 @@ def main():
                 else:
                     run_time = time.time() - start_time
                     # Wait until full hour
+                    # TODO: Fix sleeping, does not support both win and linux?
                     print "Quota exceded, sleeping for %s seconds" % \
                         (3600 - run_time)
                     time.sleep(3600 - run_time)
