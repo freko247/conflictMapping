@@ -33,8 +33,8 @@ def main():
                     run_time = time.time() - start_time
                     # Wait until full hour
                     print "Quota exceded, sleeping for %s seconds" % \
-                        (3600-run_time)
-                    time.sleep(3600-run_time)
+                        (3600 - run_time)
+                    time.sleep(3600 - run_time)
                     # Reset start time, no_queries and no_results
                     start_time = time.time()
                     no_queries = 0
