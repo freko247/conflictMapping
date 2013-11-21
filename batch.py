@@ -6,6 +6,7 @@ import time
 from dataMining import tweetSearch
 from database import db_functions
 
+
 def main():
     """
     Main function in batch script, where eternal while loop is running.
@@ -31,8 +32,8 @@ def main():
                 else:
                     run_time = time.time() - start_time
                     # Wait until full hour
-                    print "Quota exceded sleeping for %s seconds" % \
-                        3600-run_time
+                    print "Quota exceded, sleeping for %s seconds" % \
+                        (3600-run_time)
                     time.sleep(3600-run_time)
                     # Reset start time, no_queries and no_results
                     start_time = time.time()
