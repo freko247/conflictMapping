@@ -34,27 +34,20 @@ def saveTweets(tweets):
 def main():
     """Main function used when running script independently.
     Test data 'tweets' has expected data format"""
-    # try:
-    #     import config
-    #     # TODO: Fix relative import config is in ../config/config.py
-    #     # and/or move config file
-    #     DATABASE_LOCATION = config.DATABASE_LOCATION
-    # except ImportError:
-    #     DATABASE_LOCATION = 'lite.db'
-    # database = SqliteDatabase(DATABASE_LOCATION)
-    # database.connect()
-    tweets = [[(u'profile',
-                u'http://a0.twimg.com/profile_images/2709678005/'
-                'e4dfb055e127c9f1f41b90335e67e964_normal.jpeg'),
-               (u'language', u'en'),
-               (u'author', u'PatrakaarPopat'),
-               (u'url', u'https://twitter.com/PatrakaarPopat/status/'
-                '385052813715185664'),
-               (u'text', u"RT @cpjasia: Journo from #Indonesia wins @AFP"
-                "prize for brave reporting on #Syria's civil war and"
-                " #Jakarta's drug trade. http://t.co/i0cvBP\u2026"),
-               (u'date', u'Tue Oct 01 14:45:19 +0000 2013'),
-               (u'id', u'385052813715185664')], ]
+    tweets = [[{u'profile': u'http://pbs.twimg.com/profile_images/'
+                '378800000625405614/'
+                '881510dae4b7d1a9525d205106c69118_normal.jpeg',
+                u'language': u'en',
+                u'author': u'BarootiShahabeh',
+                u'url': u'https://twitter.com/BarootiShahabeh/status/'
+                '403471725436076032',
+                u'text': u"RT @AlMonitor: As the #Syria war continues,"
+                " Assad'sopponents are incredibly becoming lawless"
+                " criminals - http://t.co/eNuTnxnW2P",
+                'tweet_country': 'syria',
+                u'date': u'Thu Nov 21 10:35:30 +0000 2013',
+                'tweet_search_word': 'war',
+                u'id': u'403471725436076032'}], ]
     saveTweets(tweets)
     return
 
