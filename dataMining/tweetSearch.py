@@ -73,8 +73,8 @@ def main():
     # words = getSearchWords()
     # countries = getCountries()
     tweets = getTweets('war', 'syria')
-    return tweets
+    print tweets
 
 
 if __name__ == '__main__':
-    print main()
+    main()
