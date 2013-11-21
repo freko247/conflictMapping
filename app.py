@@ -41,9 +41,12 @@ if __name__ == ("__main__"):
     arguments = docopt(__doc__)
     debug = arguments.get('debug')
     if debug:
-        print 'Starting in debug mode!'
+        port = 8889
+        print 'Starting server in debug mode!'
     else:
-        'Starting server!'
+        port = 8888
+        print 'Starting server!'
+    print 'Tornado server ready at 127.0.0.1:%s' % port
     application = Application(debug=debug)
-    application.listen(8889)
+    application.listen(port)
     tornado.ioloop.IOLoop.instance().start()
