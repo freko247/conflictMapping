@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
+"""
+Batch script that retrieves and stores tweets in database
+"""
 import time
 from dataMining import tweetSearch
 from database import db_functions
 
-
 def main():
-    # Get tweets
-    # TODO: Limit queries and results with time limit,
-    # pause script if search limit is filled
-    # results:1-3000/count; queries:600/hour; throttle:0.5
-    # Do this by turninng getTweets() into generator?
-    # and limiting with counters (len(tweets)) and timer when using
+    """
+    Main function in batch script, where eternal while loop is running.
 
+    Script uses modules dataMining and database to retrieve and store data.
+    """
     no_queries = 0
     no_results = 0
     countries = tweetSearch.getCountries()

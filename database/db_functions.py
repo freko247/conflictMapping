@@ -1,4 +1,7 @@
 # -*- coding:utf-8 -*-
+"""
+Module defines methods for storing data in database.
+"""
 from hashlib import sha1
 from datetime import datetime
 from models import Tweet
