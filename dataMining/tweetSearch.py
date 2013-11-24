@@ -26,7 +26,7 @@ def getCountries():
     url = r'https://raw.github.com/umpirsky/' \
           'country-list/master/country/cldr/en/country.csv'
     response = urllib2.urlopen(url)
-    # TODO, check encoding
+    # TODO: check encoding
     data = response.read()
     country_data = data.split('\n')
     country = country_data[1]
