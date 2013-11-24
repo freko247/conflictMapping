@@ -3,8 +3,12 @@
 Batch script that retrieves and stores tweets in database
 """
 import time
+
+from sqlalchemy.orm import scoped_session, sessionmaker
+
+import config
 from dataMining import tweetSearch
-from database import db_functions
+from database import db, db_functions
 
 
 def main():
@@ -13,11 +17,17 @@ def main():
 
     Script uses modules dataMining and database to retrieve and store data.
     """
+
     no_queries = 0
     no_results = 0
     countries = tweetSearch.getCountries()
     words = tweetSearch.getSearchWords()
     start_time = time.time()
+    engine = db.init_db(config.get('database', 'DATABASE_LOCATION'))
+    db_session = scoped_session(sessionmaker(autocommit=False,
+                                             autoflush=False,
+                                             bind=engine))
+
     while 1:
         for word in words:
             for country in countries:
@@ -26,7 +36,7 @@ def main():
                     # Save tweets
                     print '%s tweets when searching for %s + %s.' % \
                         (len(tweets), word, country)
-                    db_functions.saveTweets(tweets)
+                    db_functions.saveTweets(db_session, tweets)
                     no_queries += 1
                     no_results += len(tweets)
                 else:

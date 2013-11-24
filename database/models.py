@@ -3,10 +3,12 @@
 Database models.
 """
 from sqlalchemy import Column, DateTime, String
-from db import Base
+from sqlalchemy.ext.declarative import declarative_base
+
+DeclarativeBase = declarative_base()
 
 
-class Tweet(Base):
+class Tweet(DeclarativeBase):
     """Database model for tweet table"""
     __tablename__ = 'tweet'
     tweet_id = Column(String, primary_key=True, doc='Unique ID of tweet')

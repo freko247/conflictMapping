@@ -3,23 +3,19 @@
 Module used for initiating database connection.
 Sqlite database named lite.db is created by default.
 """
-from sqlalchemy import DateTime, Column, String, create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy import create_engine
+import models
 
 
-DATABASE_LOCATION = 'lite.db'
-
-engine = create_engine('sqlite:///%s' % DATABASE_LOCATION)
-db_session = scoped_session(sessionmaker(autocommit=False,
-                                         autoflush=False,
-                                         bind=engine))
-Base = declarative_base()
-Base.query = db_session.query_property()
+def create_tables(engine):
+    """
+    Database creation.
+    """
+    models.DeclarativeBase.metadata.create_all(engine)
 
 
-def init_db():
+def init_db(db_location='lite.db'):
     """
     Database initialization.
     """
-    Base.metadata.create_all(bind=engine)
+    return create_engine('sqlite:///%s' % db_location)
