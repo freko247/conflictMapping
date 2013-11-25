@@ -2,15 +2,20 @@
 """
 Module for testing database.db_functions.py
 """
+import os
+import sys
+
 from sqlalchemy.orm import scoped_session, sessionmaker
-# TODO: Fix this import, it's ugly
-from ..database import db, db_functions
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from database import db, db_functions
 
 # TODO: Move to 'test setup'
 engine = db.init_db('test_lite.db')
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind=engine))
+
 
 # TODO: Use fixtures instead for test data
 tweets = [{u'profile': u'http://pbs.twimg.com/profile_images/'
