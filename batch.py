@@ -5,6 +5,7 @@ Batch script that retrieves and stores tweets in database
 import time
 
 from sqlalchemy.orm import scoped_session, sessionmaker
+from pattern.web import SearchEngineLimitError
 
 import config
 from dataMining import tweetSearch
@@ -17,39 +18,29 @@ def main():
 
     Script uses modules dataMining and database to retrieve and store data.
     """
-
-    no_queries = 0
-    no_results = 0
     countries = tweetSearch.getCountries()
     words = tweetSearch.getSearchWords()
     start_time = time.time()
-    engine = db.init_db(config.get('database', 'DATABASE_LOCATION'))
+    engine = db.init_db(config.DATABASE_LOCATION)
     db_session = scoped_session(sessionmaker(autocommit=False,
                                              autoflush=False,
                                              bind=engine))
-
     while 1:
+        start_time = time.time()
         for word in words:
             for country in countries:
-                if no_queries < 600 and no_results < 3000:
+                try:
                     tweets = tweetSearch.getTweets(word, country)
-                    # Save tweets
-                    print '%s tweets when searching for %s + %s.' % \
-                        (len(tweets), word, country)
-                    db_functions.saveTweets(db_session, tweets)
-                    no_queries += 1
-                    no_results += len(tweets)
-                else:
+                except SearchEngineLimitError:
                     run_time = time.time() - start_time
-                    # Wait until full hour
-                    # TODO: Fix sleeping, does not support both win and linux?
                     print "Quota exceded, sleeping for %s seconds" % \
-                        (3600 - run_time)
+                          (3600 - run_time)
                     time.sleep(3600 - run_time)
-                    # Reset start time, no_queries and no_results
-                    start_time = time.time()
-                    no_queries = 0
-                    no_results = 0
-            raise
+                    tweets = tweetSearch.getTweets(word, country)
+                # Save tweets
+                print '%s tweets when searching for %s + %s.' % \
+                    (len(tweets), word, country)
+                db_functions.saveTweets(db_session, tweets)
+
 if __name__ == '__main__':
     main()
