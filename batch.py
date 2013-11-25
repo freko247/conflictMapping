@@ -3,6 +3,7 @@
 Batch script that retrieves and stores tweets in database
 """
 import logging
+from logging.handlers import TimedRotatingFileHandler
 import os
 import time
 
@@ -20,12 +21,14 @@ def main():
 
     Script uses modules dataMining and database to retrieve and store data.
     """
-    logging.basicConfig(filename='logs/batch.log',
-                        level=logging.DEBUG,
-                        format='%(asctime)s %(message)s')
+    logHandler = TimedRotatingFileHandler("logs/batch.log", when="midnight")
+    logFormatter = logging.Formatter('%(asctime)s: %(levelname)s; %(message)s')
+    logHandler.setFormatter(logFormatter)
+    logger = logging.getLogger('batch logger')
+    logger.addHandler(logHandler)
+    logger.setLevel(logging.INFO)
     countries = tweetSearch.getCountries()
     words = tweetSearch.getSearchWords()
-    start_time = time.time()
     create_tables = False
     if not os.path.isfile(config.DATABASE_LOCATION):
         create_tables = True
@@ -35,21 +38,22 @@ def main():
     db_session = scoped_session(sessionmaker(autocommit=False,
                                              autoflush=False,
                                              bind=engine))
+    logger.info('Started script.')
     while 1:
-        start_time = time.time()
         for word in words:
             for country in countries:
-                try:
-                    tweets = tweetSearch.getTweets(word, country)
-                except SearchEngineLimitError:
-                    run_time = time.time() - start_time
-                    logging.warning('Quota exceded, sleeping for %s seconds' %
-                                    (3600 - run_time))
-                    time.sleep(3600 - run_time)
-                    tweets = tweetSearch.getTweets(word, country)
+                tweets = None
+                while not tweets:
+                    try:
+                        tweets = tweetSearch.getTweets(word, country)
+                    except SearchEngineLimitError:
+                        logger.warning('Search engine limit exceded,'
+                                       ' sleeping for %s seconds.' %
+                                       config.SLEEP_TIME)
+                        time.sleep(config.SLEEP_TIME)
                 # Save tweets
-                logging.debug('Found %s tweets when searching for %s + %s.' %
-                              (len(tweets), word, country))
+                logger.info('Found %s tweets when searching for %s + %s.' %
+                            (len(tweets), word, country))
                 db_functions.saveTweets(db_session, tweets)
 
 if __name__ == '__main__':
