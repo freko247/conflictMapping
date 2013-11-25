@@ -2,6 +2,7 @@
 """
 Batch script that retrieves and stores tweets in database
 """
+import logging
 import os
 import time
 
@@ -19,6 +20,9 @@ def main():
 
     Script uses modules dataMining and database to retrieve and store data.
     """
+    logging.basicConfig(filename='logs/batch.log',
+                        level=logging.DEBUG,
+                        format='%(asctime)s %(message)s')
     countries = tweetSearch.getCountries()
     words = tweetSearch.getSearchWords()
     start_time = time.time()
@@ -39,13 +43,13 @@ def main():
                     tweets = tweetSearch.getTweets(word, country)
                 except SearchEngineLimitError:
                     run_time = time.time() - start_time
-                    print "Quota exceded, sleeping for %s seconds" % \
-                          (3600 - run_time)
+                    logging.warning('Quota exceded, sleeping for %s seconds' %
+                                    (3600 - run_time))
                     time.sleep(3600 - run_time)
                     tweets = tweetSearch.getTweets(word, country)
                 # Save tweets
-                print '%s tweets when searching for %s + %s.' % \
-                    (len(tweets), word, country)
+                logging.debug('Found %s tweets when searching for %s + %s.' %
+                              (len(tweets), word, country))
                 db_functions.saveTweets(db_session, tweets)
 
 if __name__ == '__main__':
