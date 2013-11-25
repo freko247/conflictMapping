@@ -39,9 +39,10 @@ def main():
         logger.warning('Caught signal: %s, killing process.', sig)
         sys.exit(0)
     signal.signal(signal.SIGINT, signal_handler)
-
+    # Search setup
     countries = tweetSearch.getCountries()
     words = tweetSearch.getSearchWords()
+    # Database setup
     create_tables = False
     if not os.path.isfile(config.DATABASE_LOCATION):
         create_tables = True
@@ -52,6 +53,7 @@ def main():
                                              autoflush=False,
                                              bind=engine))
     logger.info('Started script (PID: %s).' % os.getpid())
+    # Starting datamining loop
     while 1:
         for word in words:
             for country in countries:
