@@ -26,7 +26,7 @@ def getCountries():
           'country-list/master/country/cldr/en/country.csv'
     response = urllib2.urlopen(url)
     # TODO: check encoding
-    data = response.read()
+    data = unicode(response.read(), 'utf-8')
     country_data = data.split('\n')
     country = country_data[1]
     countries = []
