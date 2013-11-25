@@ -58,10 +58,10 @@ if __name__ == ("__main__"):
     arguments = docopt(__doc__)
     debug = arguments.get('debug')
     if debug:
-        port = config.get('web server', 'DEBUG_PORT')
+        port = config.DEBUG_PORT
         print 'Starting server in debug mode!'
     else:
-        port = config.get('web server', 'DEBUG_PORT')
+        port = config.SERVER_PORT
         print 'Starting server!'
     print 'Tornado server ready at 127.0.0.1:%s' % port
     application = Application(debug=debug)
