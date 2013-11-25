@@ -38,7 +38,7 @@ def main():
     db_session = scoped_session(sessionmaker(autocommit=False,
                                              autoflush=False,
                                              bind=engine))
-    logger.info('Started script.')
+    logger.info('Started script (PID: %s).' % os.getpid())
     while 1:
         for word in words:
             for country in countries:
