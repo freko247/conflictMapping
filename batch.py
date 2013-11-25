@@ -2,6 +2,7 @@
 """
 Batch script that retrieves and stores tweets in database
 """
+import os
 import time
 
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -21,7 +22,12 @@ def main():
     countries = tweetSearch.getCountries()
     words = tweetSearch.getSearchWords()
     start_time = time.time()
+    create_tables = False
+    if not os.path.isfile(config.DATABASE_LOCATION):
+        create_tables = True
     engine = db.init_db(config.DATABASE_LOCATION)
+    if create_tables:
+        db.create_tables(engine)
     db_session = scoped_session(sessionmaker(autocommit=False,
                                              autoflush=False,
                                              bind=engine))
