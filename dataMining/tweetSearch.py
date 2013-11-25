@@ -4,8 +4,7 @@ Module with methods used for retreiving tweets, containing certain
 search words, from Twitter.
 """
 from pattern.web import Twitter
-from pattern.en import tag
-from pattern.vector import KNN, count
+from pattern.vector import KNN
 import urllib2
 
 twitter = Twitter(license=None, throttle=0.5)
@@ -52,7 +51,6 @@ def getTweets(word, country):
     The API has a limit of 150 queries per 15 minutes (each call to search()
     counts as one query).
     """
-
     results = twitter.search('%s AND %s' % (word, country),
                              start=1,
                              count=100,
