@@ -2,9 +2,6 @@
 ## conflictMapping
 #################
 
-*.pydevproject
-.project
-.metadata
 bin/
 tmp/
 venv
