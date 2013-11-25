@@ -6,6 +6,8 @@ import logging
 from logging.handlers import TimedRotatingFileHandler
 import os
 import time
+import signal
+import sys
 
 from sqlalchemy.orm import scoped_session, sessionmaker
 from pattern.web import SearchEngineLimitError
@@ -21,12 +23,23 @@ def main():
 
     Script uses modules dataMining and database to retrieve and store data.
     """
+    # Logger
     logHandler = TimedRotatingFileHandler("logs/batch.log", when="midnight")
     logFormatter = logging.Formatter('%(asctime)s: %(levelname)s; %(message)s')
     logHandler.setFormatter(logFormatter)
     logger = logging.getLogger('batch logger')
     logger.addHandler(logHandler)
     logger.setLevel(logging.INFO)
+
+    # Signals
+    def signal_handler(sig, frame):
+        """
+        Method that handles received kill signals.
+        """
+        logger.warning('Caught signal: %s, killing process.', sig)
+        sys.exit(0)
+    signal.signal(signal.SIGINT, signal_handler)
+
     countries = tweetSearch.getCountries()
     words = tweetSearch.getSearchWords()
     create_tables = False
