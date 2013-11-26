@@ -39,7 +39,7 @@ def getCountries():
     return countries  # Only get data for 20 first countries when testing
 
 
-def getTweets(word, country):
+def getTweets(terms):
     """
     Searches Twitter for tweets containing two words, 'country' and 'word',
     given as parameters.
@@ -51,6 +51,7 @@ def getTweets(word, country):
     The API has a limit of 150 queries per 15 minutes (each call to search()
     counts as one query).
     """
+    word, country = terms
     results = twitter.search('%s AND %s' % (word, country),
                              start=1,
                              count=100,
@@ -70,7 +71,7 @@ def main():
     """
     # words = getSearchWords()
     # countries = getCountries()
-    tweets = getTweets('war', 'syria')
+    tweets = getTweets([('war', 'syria'), ])
     print tweets
 
 

@@ -56,23 +56,34 @@ def main():
                                              autoflush=False,
                                              bind=engine))
     logger.info('Started script (PID: %s).' % os.getpid())
+
+    def get_and_store_data(search_terms, search_function, save_function):
+        skipped_rows = []
+        for row in search_terms:
+            results = None
+            try:
+                results = search_function(row)
+            except SearchEngineLimitError:
+                logger.warning('Search engine limit exceeded,'
+                               ' sleeping for %s seconds.' %
+                               config.SLEEP_TIME)
+                time.sleep(config.SLEEP_TIME)
+                skipped_rows.append(row)
+            if results:
+                # Save tweets
+                logger.info('Found %s results when searching for %s.' %
+                            (len(results), ' and '.join(row)))
+                save_function(db_session, results)
+            if skipped_rows:
+                get_and_store_data(skipped_rows,
+                                   search_function,
+                                   save_function)
     # Starting datamining loop
     while 1:
-        for word in words:
-            for country in countries:
-                tweets = None
-                while not tweets:
-                    try:
-                        tweets = tweetSearch.getTweets(word, country)
-                    except SearchEngineLimitError:
-                        logger.warning('Search engine limit exceded,'
-                                       ' sleeping for %s seconds.' %
-                                       config.SLEEP_TIME)
-                        time.sleep(config.SLEEP_TIME)
-                # Save tweets
-                logger.info('Found %s tweets when searching for %s + %s.' %
-                            (len(tweets), word, country))
-                db_functions.saveTweets(db_session, tweets)
+        search_terms = [(a, b) for b in words for a in countries]
+        search_function = tweetSearch.getTweets
+        save_function = db_functions.saveTweets
+        get_and_store_data(search_terms, search_function, save_function)
 
 if __name__ == '__main__':
     main()
