@@ -24,7 +24,10 @@ def main():
     Script uses modules dataMining and database to retrieve and store data.
     """
     # Logger
-    logHandler = TimedRotatingFileHandler("logs/batch.log", when="midnight")
+    logHandler = TimedRotatingFileHandler(os.path.join(
+                                          os.path.dirname(__file__),
+                                          "logs", "batch.log"),
+                                          when="midnight")
     logFormatter = logging.Formatter('%(asctime)s: %(levelname)s; %(message)s')
     logHandler.setFormatter(logFormatter)
     logger = logging.getLogger('batch logger')

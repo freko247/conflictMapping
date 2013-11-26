@@ -103,7 +103,9 @@ def shutdown():
 
 
 def main(arguments):
-    logHandler = TimedRotatingFileHandler("logs/app.log", when="midnight")
+    logHandler = TimedRotatingFileHandler(os.path.join(
+                                          os.path.dirname(__file__),
+                                          "logs", "app.log"), when="midnight")
     logFormatter = logging.Formatter('%(asctime)s: %(levelname)s; %(message)s')
     logHandler.setFormatter(logFormatter)
     global logger
