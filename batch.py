@@ -74,10 +74,10 @@ def main():
                 logger.info('Found %s results when searching for %s.' %
                             (len(results), ' and '.join(row)))
                 save_function(db_session, results)
-            if skipped_rows:
-                get_and_store_data(skipped_rows,
-                                   search_function,
-                                   save_function)
+        if skipped_rows:
+            get_and_store_data(skipped_rows,
+                               search_function,
+                               save_function)
     # Starting datamining loop
     while 1:
         search_terms = [(a, b) for b in words for a in countries]
