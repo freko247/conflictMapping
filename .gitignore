@@ -8,6 +8,7 @@ venv
 config/
 server setup/
 doc/
+logs/*.log*
 *.dot
 *.png
 *.pyc
