@@ -58,6 +58,11 @@ def main():
     logger.info('Started script (PID: %s).' % os.getpid())
 
     def get_and_store_data(search_terms, search_function, save_function):
+        """
+        Method used when getting and storing data. Method is made in a
+        semi-generic manner, so that it the batch script can evolve into
+        a dynamic script that can be tailored in the configuration file.
+        """
         skipped_rows = []
         for row in search_terms:
             results = None
