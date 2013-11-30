@@ -32,7 +32,7 @@ def main():
     logHandler.setFormatter(logFormatter)
     logger = logging.getLogger('batch logger')
     logger.addHandler(logHandler)
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging.DEBUG)
 
     # Signals
     def signal_handler(sig, frame):
@@ -55,7 +55,6 @@ def main():
     db_session = scoped_session(sessionmaker(autocommit=False,
                                              autoflush=False,
                                              bind=engine))
-    print 'created db'
     logger.info('Started script (PID: %s).' % os.getpid())
 
     def get_and_store_data(search_terms, search_function, save_function):
@@ -68,7 +67,6 @@ def main():
         for terms in search_terms:
             results = None
             try:
-                print 'getting tweets'
                 results = search_function(terms)
             except SearchEngineLimitError:
                 logger.warning('Search engine limit exceeded,'
