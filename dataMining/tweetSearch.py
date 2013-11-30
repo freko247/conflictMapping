@@ -14,7 +14,72 @@ knn = KNN()
 def getSearchWords():
     """Function that returns list of search words"""
     # Test data, we will use synonyms for war (found in nltk word net)
-    words = ['war', 'conflict', 'jihad', ]
+    # words = ['war', 'conflict', 'jihad', ]
+    words = []
+    conflict = ['feud',
+                'vendetta',
+                'class struggle',
+                'strife',
+                'countercurrent',
+                'discord',
+                'trench warfare',
+                'fight',
+                'hassle',
+                'beating',
+                'in fighting',
+                'single combat',
+                'gunfight',
+                'battering',
+                'knife fight',
+                'affray',
+                'turf war',
+                'rebellion',
+                'intifada',
+                'insurgency',
+                ]
+    military_action = ['saber rattling',
+                       'battle',
+                       'assault'
+                       'naval battle',
+                       'combat',
+                       'pitched_battle',
+                       'amphibious_landing',
+                       'police action',
+                       'war',
+                       'psychological warfare',
+                       'information warfare',
+                       'limited war',
+                       'jihad',
+                       'chemical warfare',
+                       'civil war',
+                       'biological warfare',
+                       'world war',
+                       'electronic warfare',
+                       'blockade',
+                       'siege',
+                       'naval blockade',
+                       'defense',
+                       'chemical defense',
+                       'hasty defense',
+                       'biological warfare defense',
+                       'air defense',
+                       'deliberate defense',
+                       'biological defense',
+                       ]
+    war = ['psychological warfare',
+           'information warfare',
+           'limited war',
+           'jihad',
+           'chemical warfare',
+           'hot_war',
+           'civil_war',
+           'biological warfare',
+           'germ_warfare',
+           'world war',
+           ]
+    words.extend(conflict)
+    words.extend(military_action)
+    words.extend(war)
     return words
 
 
