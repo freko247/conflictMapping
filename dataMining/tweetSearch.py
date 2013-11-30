@@ -117,7 +117,6 @@ def getTweets(terms):
     The API has a limit of 150 queries per 15 minutes (each call to search()
     counts as one query).
     """
-    print ' AND '.join(terms)
     return twitter.search(' AND '.join(terms),
                           start=1,
                           count=100,
