@@ -7,7 +7,7 @@ import os
 
 
 config = ConfigParser.RawConfigParser()
-config.read(os.path.join(os.path.dirname(__file__), 'conflictMapper.cfg'))
+config.read(os.path.join(os.path.dirname(__file__), 'conflictMapping.cfg'))
 
 SLEEP_TIME = float(config.get('batch', 'SLEEP_TIME'))
 DATABASE_LOCATION = config.get('database', 'DATABASE_LOCATION')
