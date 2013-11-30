@@ -41,28 +41,23 @@ def getCountries():
 
 def getTweets(terms):
     """
-    Searches Twitter for tweets containing two words, 'country' and 'word',
-    given as parameters.
+    Expects a tuple/list of strings as parameter.
 
+    Method then searches for tweets containing the  from Twitter using
+    the package 'pattern'.
 
-    Usage needs to be restricted on number of queries, results and time.
+    Search with the API is restricted on number of queries, results and time.
     Twitter.search() returns up to 3000 results for a search term,
     (30 queries with 100 results each, or 300 queries with 10 results each).
     The API has a limit of 150 queries per 15 minutes (each call to search()
     counts as one query).
     """
-    word, country = terms
-    results = twitter.search('%s AND %s' % (word, country),
-                             start=1,
-                             count=100,
-                             sort='date'
-                             )
-    tweets = []
-    for result in results:
-        tweet = {'tweet_country': country, 'tweet_search_word': word}
-        tweet.update(dict(result.items()))
-        tweets.append(tweet)
-    return tweets
+    print ' AND '.join(terms)
+    return twitter.search(' AND '.join(terms),
+                          start=1,
+                          count=100,
+                          sort='date'
+                          )
 
 
 def main():

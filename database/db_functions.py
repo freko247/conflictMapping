@@ -7,7 +7,7 @@ from datetime import datetime
 import models
 
 
-def saveTweets(db_session, tweets):
+def saveTweets(db_session, tweets, terms):
     """Function that stores tweets in database"""
     tweet = models.Tweet()
     for row_dict in tweets:
@@ -21,8 +21,8 @@ def saveTweets(db_session, tweets):
         tweet.tweet_author = row_dict.get('author')
         tweet.tweet_url = row_dict.get('url')
         tweet.tweet_text = row_dict.get('text')
-        tweet.tweet_country = row_dict.get('tweet_country')
-        tweet.tweet_search_word = row_dict.get('tweet_search_word')
+        tweet.tweet_country = terms[0]
+        tweet.tweet_search_word = terms[1]
         tweet.tweet_date = tweet_date
         db_session.merge(tweet)
         db_session.commit()

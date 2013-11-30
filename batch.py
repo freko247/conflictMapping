@@ -55,6 +55,7 @@ def main():
     db_session = scoped_session(sessionmaker(autocommit=False,
                                              autoflush=False,
                                              bind=engine))
+    print 'created db'
     logger.info('Started script (PID: %s).' % os.getpid())
 
     def get_and_store_data(search_terms, search_function, save_function):
@@ -63,24 +64,25 @@ def main():
         semi-generic manner, so that it the batch script can evolve into
         a dynamic script that can be tailored in the configuration file.
         """
-        skipped_rows = []
-        for row in search_terms:
+        skipped_terms = []
+        for terms in search_terms:
             results = None
             try:
-                results = search_function(row)
+                print 'getting tweets'
+                results = search_function(terms)
             except SearchEngineLimitError:
                 logger.warning('Search engine limit exceeded,'
                                ' sleeping for %s seconds.' %
                                config.SLEEP_TIME)
                 time.sleep(config.SLEEP_TIME)
-                skipped_rows.append(row)
+                skipped_terms.append(terms)
             if results:
                 # Save tweets
                 logger.info('Found %s results when searching for %s.' %
-                            (len(results), ' and '.join(row)))
-                save_function(db_session, results)
-        if skipped_rows:
-            get_and_store_data(skipped_rows,
+                            (len(results), ' and '.join(terms)))
+                save_function(db_session, results, terms)
+        if skipped_terms:
+            get_and_store_data(skipped_terms,
                                search_function,
                                save_function)
     # Starting datamining loop
