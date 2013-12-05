@@ -13,7 +13,9 @@ config.read(os.path.join(os.path.dirname(__file__), 'conflictMapping.cfg'))
 SLEEP_TIME = float(config.get('batch', 'SLEEP_TIME'))
 
 # Database
-DATABASE_LOCATION = config.get('database', 'DATABASE_LOCATION')
+DATABASE_LOCATION = os.path.join(os.path.dirname(__file__),
+                                 config.get('database', 'DATABASE_LOCATION')
+                                 )
 
 # Web server
 DEBUG_PORT = config.get('web server', 'DEBUG_PORT')
