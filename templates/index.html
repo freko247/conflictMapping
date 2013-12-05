@@ -16,16 +16,32 @@
         <h1>conflictMapping</h1>
     <!-- </div> -->
     <div id='intro'>
-        <h2>Number of tweet</h2>
-        <p>{{ tweet_count }}</p>
+        <h2>World Map</h2>
+        <p>Tweets in database: {{ tweets_count }}</p>
+        <p>Data from time interval: {{ tweets_oldest }} to {{ tweets_newest }}</p>
+        <div>
+            <img src="data:image/png;base64,{{ map }}"/>
+        </div>
     </div>
-    <div id='visualization'>
-        <h2>Grouped tweets</h2>
-            <p>
-            {% for row in grouped_tweets %}
-                <p>{{ row }}</p>
-            {% endfor %}
-            </p>
+    <div id='tables'>
+        <h2>Tweets grouped by country:</h2>
+            <table>
+                {% for row in tweets_country %}
+                    <tr>
+                        <td>{{ row[0] }}</td>
+                        <td>{{ row[1] }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        <h2>Tweets grouped by search word:</h2>
+            <table>
+                {% for row in tweets_word %}
+                    <tr>
+                        <td>{{ row[0] }}</td>
+                        <td>{{ row[1] }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
     </div>
     <footer id='footer'>
     {% for item in footer %}

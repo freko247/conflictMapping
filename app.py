@@ -22,9 +22,10 @@ import tornado.ioloop
 import tornado.options
 import tornado.web
 
+import config
 from database import db
 from database.models import Tweet
-import config
+from visualization import maps
 
 stat_dir = os.path.join(os.path.dirname(__file__), config.STAT_DIR)
 template_dir = os.path.join(os.path.dirname(__file__), config.TEMPLATE_DIR)
@@ -69,23 +70,44 @@ class MainHandler(tornado.web.RequestHandler):
         """
         Method that is run when GET request is received from a client, ie. this
         is where the page content is rendered.
+
+        jinja2 is used for templating, the template index.html is rendered with
+        a dictionary of values that are used in the template.
         """
-        tweet_count = self.db.query(func.count(Tweet.tweet_id)).all()
-        grouped_tweets = self.db.query(Tweet.tweet_country,
-                                       Tweet.tweet_search_word,
+        # Total count of tweets
+        tweets_count = self.db.query(func.count(Tweet.tweet_id)).all()
+        # Tweets grouped by tweet_country with count
+        tweets_country = self.db.query(Tweet.tweet_country,
                                        func.count(Tweet.tweet_id)).\
-                                       group_by(Tweet.tweet_country,
-                                                Tweet.tweet_search_word).all()
-        grouped_tweets = sorted(grouped_tweets,
-                                key=lambda tup: tup[2],
+                                       group_by(Tweet.tweet_country).all()
+        tweets_country = sorted(tweets_country,
+                                key=lambda tup: tup[1],
                                 reverse=True)
+        # Tweets grouped by tweet_search_word with count
+        tweets_word = self.db.query(Tweet.tweet_search_word,
+                                    func.count(Tweet.tweet_id)).\
+                                    group_by(Tweet.tweet_search_word).all()
+        tweets_word = sorted(tweets_word,
+                             key=lambda tup: tup[1],
+                             reverse=True)
+        # Date of newest tweet
+        tweets_newest = self.db.query(func.max(Tweet.tweet_date)).all()
+        # Date of oldest tweet
+        tweets_oldest = self.db.query(func.min(Tweet.tweet_date)).all()
+        # Document footer
         footer = [('documentation', os.path.join('download',
-                                                     'html_doc.7z')),
-                      ('git', 'https://github.com/freko247/conflictMapping'),
-                      ]
+                                                 'html_doc.7z')),
+                  ('git', 'https://github.com/freko247/conflictMapping'),
+                  ]
+        # Path to shape file
+        shape_file = os.path.join(stat_dir, 'TM_WORLD_BORDERS-0.3.shp')
         contents = {'footer': footer,
-                    'tweet_count': tweet_count,
-                    'grouped_tweets': grouped_tweets
+                    'tweets_count': tweets_count[0][0],
+                    'tweets_country': tweets_country,
+                    'tweets_newest': tweets_newest[0][0].isoformat(),
+                    'tweets_oldest': tweets_oldest[0][0].isoformat(),
+                    'tweets_word': tweets_word,
+                    'map': maps.heat_map(shape_file, tweets_country),
                     }
         try:
             env = Environment(loader=FileSystemLoader(template_dir))
@@ -131,6 +153,7 @@ def shutdown():
 
 
 def main(arguments):
+    # TODO: Add script that builds new documentation?
     logHandler = TimedRotatingFileHandler(os.path.join(
                                           os.path.dirname(__file__),
                                           "logs", "app.log"), when="midnight")
