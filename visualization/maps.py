@@ -1,35 +1,57 @@
 # -*- coding: utf-8 -*-
+"""
+Module with methods for visualizing data with different graphs.
+"""
 from bisect import bisect
+import cStringIO
 import os
 
 import matplotlib.pyplot as plt
 import shapefile
 
 
-def heat_map(map_file, data):
+def heat_map(map_file, data, output='stream'):
+    """
+    Method takes path to shape file as first argument. Method takes data,
+    in the form of a list of tuples (title, value), as second argument.
+
+    The different shapes in the shape file are matched with the titles
+    in the data.
+    The shapes are coloured based on the relative value from the data.
+    If a shape is not recognised/matched it will be colored grey.
+
+    The method also takes an optional third argument, output.
+    This determines in what format the plot should be output. The default value
+    is 'stream'.
+
+    'stream': Sends the plot as a data stream (used when serving html files).
+    'plot'  : Opens the plot in a new dialog window.
+    'save'  : Saves the plot as 'plot.png' in the current directory.
+    """
+    if output not in ['stream', 'plot', 'save']:
+        return None
     sf = shapefile.Reader(map_file)
-    shapes = sf.shapes()
-    shape_titles = data[0]
-    shape_values = data[1]
+    shape_titles = zip(*data)[0]
+    shape_titles = [title.lower() for title in shape_titles]
+    shape_values = zip(*data)[1]
     # Color map
-    colors = ['green', 'yellow', 'orange', 'red']  # TODO: Fix more colors
+    # TODO: Fix more colors
+    colors = ['green', 'yellow', 'orange', 'red']
     data_interval = []
     max_shape_value = (max(shape_values))
-    for i in range(len(colors)):
+    for i in range(len(colors) - 1):
         data_interval.append(((i + 1) * max_shape_value / len(colors)))
-    # Shapes
-    record_indexes = []
-    for index, record in enumerate(sf.records()):
-        if record[4] in shape_titles:
-            record_indexes.append(index)
-    shapes = []
-    for record in record_indexes:
-        shapes.append(sf.shapeRecord(record).shape)
-
-    fig = plt.figure(figsize=(14, 14))
+    # Plot
+    fig = plt.figure(figsize=(14, 9))
     ax = fig.add_subplot(111)
-    for shape, value in zip(shapes, shape_values):
+    for index, shape in enumerate(sf.shapes()):
         parts = []
+        shape_title = sf.record(index)[4].lower()
+        if shape_title in shape_titles:
+            color = colors[bisect(data_interval,
+                           shape_values[shape_titles.index(shape_title)])]
+        else:
+            color = 'grey'
         for i, p in enumerate(shape.parts):
             pnext = -1 if i == len(shape.parts) - 1 else shape.parts[i + 1]
             parts.append(shape.points[p:pnext])
@@ -41,27 +63,43 @@ def heat_map(map_file, data):
                                       zorder=5))
             ax.add_artist(plt.Polygon(part,
                                       edgecolor='none',
-                                      facecolor=colors[bisect(
-                                                       data_interval,
-                                                       value) - 1
-                                                       ],
+                                      facecolor=color,
                                       linewidth=1,
                                       zorder=2))
     ax.set_xlim(-200, 200)
     ax.set_ylim(-100, 100)
-    # TODO: plot to IOstream
-    plt.show()
+    ax.set_axis_off()
+    if output == 'stream':
+        # Output to IOstream
+        format = "png"
+        sio = cStringIO.StringIO()
+        plt.savefig(sio, format=format)
+        return sio.getvalue().encode("base64").strip()
+    elif output == 'plot':
+        # Output to new dialog window
+        plt.show()
+        return ''
+    elif output == 'save':
+        # Output to file
+        plt.savefig("plot.png")
+        return ''
 
 
 def main():
+    """
+    Module main method, mainly used for testing
+    different methods in the module.
+    """
     map_file = os.path.join(os.path.dirname(__file__),
                             '..',
                             'static',
                             'TM_WORLD_BORDERS-0.3.shp')
-    data = (['Finland', 'Sweden', 'Norway', 'Denmark'],
-            [100, 200, 300, 150]
-            )
-    heat_map(map_file, data)
+    data = [('Finland', 100),
+            ('Sweden', 200),
+            ('Norway', 300),
+            ('Denmark', 150)
+            ]
+    heat_map(map_file, data, output='save')
 
 if __name__ == '__main__':
     main()
