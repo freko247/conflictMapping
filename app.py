@@ -11,9 +11,13 @@ from logging.handlers import TimedRotatingFileHandler
 import os
 import time
 import signal
+import sys
 
 from docopt import docopt
+from jinja2 import Environment, FileSystemLoader, TemplateNotFound
+# from sphinx.websupport import WebSupport
 from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy import func
 import tornado.httpserver
 import tornado.ioloop
 import tornado.options
@@ -30,14 +34,53 @@ logger = None
 server = None
 
 
+class TemplateRendering:
+    """TemplateRendering
+       A simple class to hold methods for rendering templates.
+    """
+    def render_template(self, template_name, variables):
+        """render_template
+            Returns the result of template.render to be used elsewhere.
+            I think this will be useful to render templates to be passed into
+            other templates.
+
+            Gets the template directory from app settings dictionary
+            with a fall back to "templates" as a default.
+
+            Probably could use a default output if a template isn't found
+            instead of throwing an exception.
+        """
+        template_dirs = []
+        if self.settings["templates"] and self.settings["templates"] != '':
+            template_dirs.append(os.path.join(os.path.dirname(__file__),
+                                 self.settings["templates"]))
+        template_dirs.append(os.path.join(os.path.dirname(__file__),
+                             'templates'))  # added a default for fail over.
+
+        env = Environment(loader=FileSystemLoader(template_dirs))
+
+        try:
+            template = env.get_template(template_name)
+        except TemplateNotFound:
+            raise TemplateNotFound(template_name)
+        content = template.render(variables)
+        return content
+
+
 class Application(tornado.web.Application):
     """
     Application class, handlers and database connection are set up when
     initialized.
     """
     def __init__(self, debug):
-        handlers = [(r"/", MainHandler), ]
-        settings = {'debug': debug
+        # html_dir = os.path.join(os.path.dirname(__file__), config.HTML_DIR)
+        # stat_dir = os.path.join(os.path.dirname(__file__), config.STAT_DIR)
+        handlers = [(r"/", MainHandler),
+                    # (r"/doc", DocHandler),
+                    ]
+        settings = {'debug': debug,
+                    # 'template_path': html_dir,
+                    # 'static_path': stat_dir,
                     }
         tornado.web.Application.__init__(self, handlers, **settings)
         self.db = scoped_session(sessionmaker(bind=db.init_db(
@@ -62,9 +105,31 @@ class MainHandler(tornado.web.RequestHandler):
         is where the page content is rendered.
         """
         self.write("conflictMapping")
-        tweets = self.db.query(Tweet).all()
+        result = self.db.query(func.count(Tweet.tweet_id)).all()
         self.write("<br> %s number of tweets about conflicts in database"
-                   % len(tweets))
+                   % result)
+        result = self.db.query(Tweet.tweet_country,
+                               Tweet.tweet_search_word,
+                               func.count(Tweet.tweet_id)).\
+                               group_by(Tweet.tweet_country,
+                                        Tweet.tweet_search_word).all()
+        for row in sorted(result, key=lambda tup: tup[2], reverse=True):
+            country, word, count = row
+            try:
+                self.write('%s %s %s <br>' % (country, word, count))
+            except:
+                print sys.exc_info()[0]
+
+
+# class DocHandler(tornado.web.RequestHandler, TemplateRendering):
+#     def get(self):
+#         root = os.path.dirname(__file__)
+#         support = WebSupport(datadir=os.path.join(root, 'doc'),
+#                              search='xapian')
+#         contents = support.get_document('')
+#         # a bunch of variables to pass into the template
+#         content = self.render_template('doc.html', contents)
+#         self.write(content)
 
 
 def sig_handler(sig, frame):
