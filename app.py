@@ -26,9 +26,8 @@ from database import db
 from database.models import Tweet
 import config
 
-
-MAX_WAIT_SECONDS_BEFORE_SHUTDOWN = 3
-template_dir = os.path.join(os.path.dirname(__file__), config.HTML_DIR)
+stat_dir = os.path.join(os.path.dirname(__file__), config.STAT_DIR)
+template_dir = os.path.join(os.path.dirname(__file__), config.TEMPLATE_DIR)
 
 logger = None
 server = None
@@ -40,13 +39,14 @@ class Application(tornado.web.Application):
     initialized.
     """
     def __init__(self, debug):
-        # stat_dir = os.path.join(os.path.dirname(__file__), config.STAT_DIR)
         handlers = [(r"/", MainHandler),
-                    # (r"/doc", DocHandler),
+                    (r'/download/(.*)',
+                     tornado.web.StaticFileHandler,
+                     {'path': stat_dir}),
                     ]
         settings = {'debug': debug,
                     'template_path': template_dir,
-                    # 'static_path': stat_dir,
+                    'static_path': stat_dir,
                     }
         tornado.web.Application.__init__(self, handlers, **settings)
         self.db = scoped_session(sessionmaker(bind=db.init_db(
@@ -82,8 +82,11 @@ class MainHandler(tornado.web.RequestHandler):
         grouped_tweets = sorted(grouped_tweets,
                                 key=lambda tup: tup[2],
                                 reverse=True)
-        print grouped_tweets
-        contents = {'navigation': ['home', 'documentation', 'git', 'about'],
+        navigation = [('documentation', os.path.join('download',
+                                                     'html_doc.7z')),
+                      ('git', 'https://github.com/freko247/conflictMapping'),
+                      ]
+        contents = {'navigation': navigation,
                     'tweet_count': tweet_count,
                     'grouped_tweets': grouped_tweets
                     }

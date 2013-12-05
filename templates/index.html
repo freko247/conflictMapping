@@ -6,7 +6,7 @@
 <body>
     <ul id="navigation">
     {% for item in navigation %}
-        <li><a href="{{ item }}.html">{{ item }}</a></li>
+        <li><a href="{{ item[1] }}">{{ item[0] }}</a></li>
     {% endfor %}
     </ul>
 
