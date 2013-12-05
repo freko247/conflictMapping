@@ -7,7 +7,7 @@ tmp/
 venv
 config/
 server setup/
-doc/
+doc*
 logs/*.log*
 *.dot
 *.png
