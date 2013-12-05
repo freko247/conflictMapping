@@ -6,6 +6,8 @@ from bisect import bisect
 import cStringIO
 import os
 
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import shapefile
 
