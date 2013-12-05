@@ -1,6 +1,12 @@
+Jinja2==2.7.1
+MarkupSafe==0.18
 Pattern==2.6
+Pygments==1.6
 SQLAlchemy==0.8.3
+Sphinx==1.1.3
+coverage==3.7
 docopt==0.6.1
+docutils==0.11
 nose==1.3.0
 peewee==2.1.4
 tornado==3.1.1
