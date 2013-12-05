@@ -1,0 +1,16 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html lang="en">
+<head>
+    <title>conflictMapping</title>
+</head>
+<body>
+    <ul id="navigation">
+    {% for item in navigation %}
+        <li><a href="{{ item }}.html">{{ item }}</a></li>
+    {% endfor %}
+    </ul>
+
+    <h1>conflictMapping</h1>
+    {{ tweet_count }}
+</body>
+</html>
