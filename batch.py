@@ -85,10 +85,14 @@ def main():
                                save_function)
     # Starting datamining loop
     while 1:
-        search_terms = [(a, b) for b in words for a in countries]
-        search_function = tweetSearch.getTweets
-        save_function = db_functions.saveTweets
-        get_and_store_data(search_terms, search_function, save_function)
+        try:
+            search_terms = [(a, b) for b in words for a in countries]
+            search_function = tweetSearch.getTweets
+            save_function = db_functions.saveTweets
+            get_and_store_data(search_terms, search_function, save_function)
+        except:
+            logger.exception('Exception caught!')
+            raise
 
 if __name__ == '__main__':
     main()
