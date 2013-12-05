@@ -1,16 +1,36 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html lang="en">
 <head>
-    <title>conflictMapping</title>
+    <title>conflictMapping</title>'
+    <style type="text/css">
+        footer {
+                /*background-color: #333;*/
+                width: 100%;
+                bottom: 0;
+                position: fixed;
+            }
+    </style>
 </head>
 <body>
-    <ul id="navigation">
-    {% for item in navigation %}
-        <li><a href="{{ item[1] }}">{{ item[0] }}</a></li>
+    <!-- <div id='title'> -->
+        <h1>conflictMapping</h1>
+    <!-- </div> -->
+    <div id='intro'>
+        <h2>Number of tweet</h2>
+        <p>{{ tweet_count }}</p>
+    </div>
+    <div id='visualization'>
+        <h2>Grouped tweets</h2>
+            <p>
+            {% for row in grouped_tweets %}
+                <p>{{ row }}</p>
+            {% endfor %}
+            </p>
+    </div>
+    <footer id='footer'>
+    {% for item in footer %}
+        <p><a href="{{ item[1] }}">{{ item[0] }}</a></p>
     {% endfor %}
-    </ul>
-
-    <h1>conflictMapping</h1>
-    {{ tweet_count }}
+    </footer>
 </body>
 </html>

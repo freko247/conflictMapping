@@ -71,9 +71,6 @@ class MainHandler(tornado.web.RequestHandler):
         is where the page content is rendered.
         """
         tweet_count = self.db.query(func.count(Tweet.tweet_id)).all()
-        print tweet_count
-        # self.write("<br> %s number of tweets about conflicts in database"
-                   # % result)
         grouped_tweets = self.db.query(Tweet.tweet_country,
                                        Tweet.tweet_search_word,
                                        func.count(Tweet.tweet_id)).\
@@ -82,11 +79,11 @@ class MainHandler(tornado.web.RequestHandler):
         grouped_tweets = sorted(grouped_tweets,
                                 key=lambda tup: tup[2],
                                 reverse=True)
-        navigation = [('documentation', os.path.join('download',
+        footer = [('documentation', os.path.join('download',
                                                      'html_doc.7z')),
                       ('git', 'https://github.com/freko247/conflictMapping'),
                       ]
-        contents = {'navigation': navigation,
+        contents = {'footer': footer,
                     'tweet_count': tweet_count,
                     'grouped_tweets': grouped_tweets
                     }
