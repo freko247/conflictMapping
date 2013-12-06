@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import shapefile
 
 
-def heat_map(map_file, data, output='stream'):
+def heat_map(map_file, data, logger=None, output='stream'):
     """
     Method takes path to shape file as first argument. Method takes data,
     in the form of a list of tuples (title, value), as second argument.
@@ -22,7 +22,9 @@ def heat_map(map_file, data, output='stream'):
     The shapes are coloured based on the relative value from the data.
     If a shape is not recognised/matched it will be colored grey.
 
-    The method also takes an optional third argument, output.
+    The third given argument
+
+    The method also takes an optional fourth argument, output.
     This determines in what format the plot should be output. The default value
     is 'stream'.
 
@@ -63,11 +65,13 @@ def heat_map(map_file, data, output='stream'):
     ax = fig.add_subplot(111)
     for index, shape in enumerate(sf.shapes()):
         parts = []
-        shape_title = sf.record(index)[4].lower()
-        if shape_title in shape_titles:
+        title = sf.record(index)[4].lower()
+        if title in shape_titles:
             color = colors[bisect(data_interval,
-                           shape_values[shape_titles.index(shape_title)])]
+                           shape_values[shape_titles.index(title)])]
         else:
+            if logger:
+                logger.debug('No match for: %s' % title)
             color = 'grey'
         for i, p in enumerate(shape.parts):
             pnext = -1 if i == len(shape.parts) - 1 else shape.parts[i + 1]

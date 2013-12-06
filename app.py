@@ -107,7 +107,9 @@ class MainHandler(tornado.web.RequestHandler):
                     'tweets_newest': tweets_newest[0][0].isoformat(),
                     'tweets_oldest': tweets_oldest[0][0].isoformat(),
                     'tweets_word': tweets_word,
-                    'map': maps.heat_map(shape_file, tweets_country),
+                    'map': maps.heat_map(shape_file,
+                                         tweets_country,
+                                         logger=logger),
                     }
         try:
             env = Environment(loader=FileSystemLoader(template_dir))
