@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 """
-Tornado web server, hosts page that visualises tweet data.
+This script starts a Tornado Web Server, that hosts a web application,
+that visualises gathered data.
 
 Usage:
   app.py

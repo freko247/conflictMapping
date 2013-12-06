@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Batch script that retrieves and stores tweets in database
+Batch script that retrieves and stores data in database.
 """
 import logging
 from logging.handlers import TimedRotatingFileHandler
