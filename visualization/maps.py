@@ -34,11 +34,26 @@ def heat_map(map_file, data, output='stream'):
         return None
     sf = shapefile.Reader(map_file)
     shape_titles = zip(*data)[0]
-    shape_titles = [title.lower() for title in shape_titles]
+    shape_titles = [title.lower().strip('"') for title in shape_titles]
     shape_values = zip(*data)[1]
     # Color map
-    # TODO: Fix more colors
-    colors = ['green', 'yellow', 'orange', 'red']
+    colors = ['#00E58E', '#00E585', '#01E57D', '#01E674',
+              '#02E66C', '#03E663', '#03E75B', '#04E752',
+              '#05E74A', '#05E842', '#06E839', '#07E931',
+              '#07E929', '#08E921', '#09EA19', '#09EA10',
+              '#0CEA0A', '#15EB0B', '#1EEB0B', '#28EB0C',
+              '#31EC0D', '#3BEC0D', '#44ED0E', '#4DED0F',
+              '#57ED0F', '#60EE10', '#69EE11', '#72EE11',
+              '#7CEF12', '#85EF13', '#8EEF13', '#97F014',
+              '#A0F015', '#A9F116', '#B2F116', '#BBF117',
+              '#C4F218', '#CDF218', '#D6F219', '#DFF31A',
+              '#E8F31B', '#F1F31B', '#F4EE1C', '#F4E61D',
+              '#F5DE1D', '#F5D61E', '#F5CE1F', '#F6C620',
+              '#F6BE20', '#F6B621', '#F7AE22', '#F7A622',
+              '#F79E23', '#F89724', '#F88F25', '#F98725',
+              '#F97F26', '#F97827', '#FA7028', '#FA6928',
+              '#FA6129', '#FB592A', '#FB522B', '#FC4A2C',
+              ]
     data_interval = []
     max_shape_value = (max(shape_values))
     for i in range(len(colors) - 1):
