@@ -80,7 +80,7 @@ def heat_map(map_file, data, logger=None, output='stream'):
         if not matched:
             not_matched.append(data_title)
     if logger:
-        logger.DEBUG('List of data not matched with shape %s:' % not_matched)
+        logger.debug('List of data not matched with shape %s:' % not_matched)
     # Create plot
     shapes = sf.shapes()  # TODO: Make it possible to select shapes manually
     for index, shape in enumerate(shapes):
