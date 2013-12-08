@@ -95,14 +95,14 @@ class MainHandler(tornado.web.RequestHandler):
         tweets_newest = self.db.query(func.max(Tweet.tweet_date)).all()
         # Date of oldest tweet
         tweets_oldest = self.db.query(func.min(Tweet.tweet_date)).all()
-        # Document footer
-        footer = [('documentation', os.path.join('download',
-                                                 'html_doc.7z')),
-                  ('git', 'https://github.com/freko247/conflictMapping'),
-                  ]
+        # Document links
+        links = [('documentation', os.path.join('download',
+                                                'html_doc.7z')),
+                 ('git', 'https://github.com/freko247/conflictMapping'),
+                 ]
         # Path to shape file
         shape_file = os.path.join(stat_dir, 'TM_WORLD_BORDERS-0.3.shp')
-        contents = {'footer': footer,
+        contents = {'links': links,
                     'tweets_count': tweets_count[0][0],
                     'tweets_country': tweets_country,
                     'tweets_newest': tweets_newest[0][0].isoformat(),
