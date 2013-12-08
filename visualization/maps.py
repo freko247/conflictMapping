@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import shapefile
 
 
-def heat_map(map_file, data, output='stream'):
+def heat_map(map_file, data, logger=None, output='stream'):
     """
     Method takes path to shape file as first argument. Method takes data,
     in the form of a list of tuples (title, value), as second argument.
@@ -22,7 +22,9 @@ def heat_map(map_file, data, output='stream'):
     The shapes are coloured based on the relative value from the data.
     If a shape is not recognised/matched it will be colored grey.
 
-    The method also takes an optional third argument, output.
+    The third given argument
+
+    The method also takes an optional fourth argument, output.
     This determines in what format the plot should be output. The default value
     is 'stream'.
 
@@ -33,9 +35,8 @@ def heat_map(map_file, data, output='stream'):
     if output not in ['stream', 'plot', 'save']:
         return None
     sf = shapefile.Reader(map_file)
-    shape_titles = zip(*data)[0]
-    shape_titles = [title.lower().strip('"') for title in shape_titles]
-    shape_values = zip(*data)[1]
+    data_titles = [title.lower().strip('"') for title in zip(*data)[0]]
+    data_values = zip(*data)[1]
     # Color map
     colors = ['#00E58E', '#00E585', '#01E57D', '#01E674',
               '#02E66C', '#03E663', '#03E75B', '#04E752',
@@ -55,20 +56,36 @@ def heat_map(map_file, data, output='stream'):
               '#FA6129', '#FB592A', '#FB522B', '#FC4A2C',
               ]
     data_interval = []
-    max_shape_value = (max(shape_values))
+    max_shape_value = (max(data_values))
     for i in range(len(colors) - 1):
         data_interval.append(((i + 1) * max_shape_value / len(colors)))
     # Plot
     fig = plt.figure(figsize=(14, 9))
     ax = fig.add_subplot(111)
-    for index, shape in enumerate(sf.shapes()):
+    # Match data with shapes
+    matched_dict = {}  # Shape index as key and color as value
+    not_matched = []
+    shape_titles = [unicode(title.lower(), 'latin-1')
+                    for title
+                    in zip(*sf.records())[4]
+                    ]
+    for data_title in data_titles:
+        matched = False
+        for index, shape_title in enumerate(shape_titles):
+            if data_title in shape_title:
+                color = colors[bisect(data_interval,
+                               data_values[data_titles.index(data_title)])]
+                matched_dict[index] = color
+                matched = True
+        if not matched:
+            not_matched.append(data_title)
+    if logger:
+        logger.DEBUG('List of data not matched with shape %s:' % not_matched)
+    # Create plot
+    shapes = sf.shapes()  # TODO: Make it possible to select shapes manually
+    for index, shape in enumerate(shapes):
+        color = matched_dict.get(index, 'grey')
         parts = []
-        shape_title = sf.record(index)[4].lower()
-        if shape_title in shape_titles:
-            color = colors[bisect(data_interval,
-                           shape_values[shape_titles.index(shape_title)])]
-        else:
-            color = 'grey'
         for i, p in enumerate(shape.parts):
             pnext = -1 if i == len(shape.parts) - 1 else shape.parts[i + 1]
             parts.append(shape.points[p:pnext])

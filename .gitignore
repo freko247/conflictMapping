@@ -17,4 +17,5 @@ logs/*.log*
 *.tmp
 *.bak
 *.log
+*.xlsx
 .coverage
