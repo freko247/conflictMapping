@@ -1,52 +1,72 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html lang="en">
     <head>
+        <meta charset="utf-8">
+        <script type="text/javascript" src="../static/d3/d3.v3.js"></script>
         <title>conflictMapping</title>
-        <style type="text/css">
-            footer {
-                    /*background-color: #333;*/
-                    width: 100%;
-                    bottom: 0;
-                    position: fixed;
-                }
-        </style>
     </head>
     <body>
-        <!-- <div id='title'> -->
-            <h1>conflictMapping</h1>
-        <!-- </div> -->
-        <div id='intro'>
-            <h2>World Map</h2>
-            <div>
-                {% for item in links %}
-                    <p><a href="{{ item[1] }}">{{ item[0] }}</a></p>
-                {% endfor %}
-            </div>
-            <p>Tweets in database: {{ tweets_count }}</p>
-            <p>Data from time interval: {{ tweets_oldest }} to {{ tweets_newest }}</p>
-            <div>
-                <img src="data:image/png;base64,{{ map }}"/>
-            </div>
+        <h1>conflictMapping</h1>
+        <div>
+            {% for item in links %}
+                <p><a href="{{ item[1] }}">{{ item[0] }}</a></p>
+            {% endfor %}
         </div>
-        <div id='tables'>
-            <h2>Tweets grouped by country:</h2>
-                <table>
-                    {% for row in tweets_country %}
-                        <tr>
-                            <td>{{ row[0] }}</td>
-                            <td>{{ row[1] }}</td>
-                        </tr>
-                    {% endfor %}
-                </table>
-            <h2>Tweets grouped by search word:</h2>
-                <table>
-                    {% for row in tweets_word %}
-                        <tr>
-                            <td>{{ row[0] }}</td>
-                            <td>{{ row[1] }}</td>
-                        </tr>
-                    {% endfor %}
-                </table>
-        </div>
+        <script>
+            //Tooltip
+            var div = d3.select("body").append("div")
+                .attr("class", "tooltip")
+            .style("opacity", 0.8);
+            //SVG element and attributes.
+            var width = 1000;
+            var height = 600;
+            var color = d3.scale.linear()
+                    .domain([0, 600])
+                    .range(["green", "red"]);
+            var data_value = {{ tweets_country|safe}}
+            console.log(data_value);
+            var svg = d3.select("body").append("svg")
+                      .attr("width", width)
+                      .attr("height", height);
+            var group = svg.append('g')
+            group.attr('transorm', 'scale(.3, .3)');
+
+            //Creates a projection which we can apply to the path.
+            var projection = d3.geo.mercator();
+
+            d3.json("../static/world_map.json", function(world){
+                //Gets the coordinate data from our dataset.
+                var subunits = world.features[0].properties;
+               //Allows us to check the validity of our data in the console.
+                console.log(subunits);
+                //Adds the countries to the canvas
+                group.selectAll('path').data(world.features)
+                .enter().append('path')
+                .attr('d', d3.geo.path().projection(projection))
+                .attr('id', function(d){return d.properties.GEOUNIT})
+                .attr('value', function(d){
+                    c = data_value[d.properties.GEOUNIT]
+                    if (c) return c
+                    else return 0;})
+                .style('fill', function(d){
+                    c = data_value[d.properties.GEOUNIT]
+                    if (c) return color(c)
+                    else return 'grey';})
+                .style('stroke', 'white')
+                .style('stroke-with', 1);
+
+                svg.selectAll("path").data(world.features)
+                .on("mouseover", function(d){
+                    div.transition().duration(200);
+                    c = data_value[d.properties.GEOUNIT]
+                    if (!c) c = 0
+                    div.html("<b>" + d.properties.GEOUNIT  + "</b><br>"
+                    + "Population: " + d.properties.POP_EST + "<br>" +
+                    "Tweets: " + c)});
+                });
+        </script>
+        <footer>
+            <p>{{ tweets_count }} tweets in database </p>
+        </footer>
     </body>
 </html>

@@ -7,6 +7,7 @@ Usage:
   app.py
   app.py debug
 """
+from json import dumps
 import logging
 from logging.handlers import TimedRotatingFileHandler
 import os
@@ -26,7 +27,6 @@ import tornado.web
 import config
 from database import db
 from database.models import Tweet
-from visualization import maps
 
 stat_dir = os.path.join(os.path.dirname(__file__), config.STAT_DIR)
 template_dir = os.path.join(os.path.dirname(__file__), config.TEMPLATE_DIR)
@@ -92,25 +92,20 @@ class MainHandler(tornado.web.RequestHandler):
                              key=lambda tup: tup[1],
                              reverse=True)
         # Date of newest tweet
-        tweets_newest = self.db.query(func.max(Tweet.tweet_date)).all()
+        # tweets_newest = self.db.query(func.max(Tweet.tweet_date)).all()
         # Date of oldest tweet
-        tweets_oldest = self.db.query(func.min(Tweet.tweet_date)).all()
+        # tweets_oldest = self.db.query(func.min(Tweet.tweet_date)).all()
         # Document links
         links = [('documentation', os.path.join('download',
                                                 'html_doc.7z')),
                  ('git', 'https://github.com/freko247/conflictMapping'),
                  ]
-        # Path to shape file
-        shape_file = os.path.join(stat_dir, 'TM_WORLD_BORDERS-0.3.shp')
         contents = {'links': links,
                     'tweets_count': tweets_count[0][0],
-                    'tweets_country': tweets_country,
-                    'tweets_newest': tweets_newest[0][0].isoformat(),
-                    'tweets_oldest': tweets_oldest[0][0].isoformat(),
-                    'tweets_word': tweets_word,
-                    'map': maps.heat_map(shape_file,
-                                         tweets_country,
-                                         logger=logger),
+                    'tweets_country': dumps(dict(tweets_country)),
+                    # 'tweets_newest': tweets_newest[0][0].isoformat(),
+                    # 'tweets_oldest': tweets_oldest[0][0].isoformat(),
+                    # 'tweets_word': tweets_word,
                     }
         try:
             env = Environment(loader=FileSystemLoader(template_dir))

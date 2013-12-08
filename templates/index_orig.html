@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html lang="en">
+    <head>
+        <title>conflictMapping</title>
+        <style type="text/css">
+            footer {
+                    /*background-color: #333;*/
+                    width: 100%;
+                    bottom: 0;
+                    position: fixed;
+                }
+        </style>
+    </head>
+    <body>
+        <!-- <div id='title'> -->
+            <h1>conflictMapping</h1>
+        <!-- </div> -->
+        <div id='intro'>
+            <h2>World Map</h2>
+            <div>
+                {% for item in links %}
+                    <p><a href="{{ item[1] }}">{{ item[0] }}</a></p>
+                {% endfor %}
+            </div>
+            <p>Tweets in database: {{ tweets_count }}</p>
+            <p>Data from time interval: {{ tweets_oldest }} to {{ tweets_newest }}</p>
+            <div>
+                <img src="data:image/png;base64,{{ map }}"/>
+            </div>
+        </div>
+        <div id='tables'>
+            <h2>Tweets grouped by country:</h2>
+                <table>
+                    {% for row in tweets_country %}
+                        <tr>
+                            <td>{{ row[0] }}</td>
+                            <td>{{ row[1] }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            <h2>Tweets grouped by search word:</h2>
+                <table>
+                    {% for row in tweets_word %}
+                        <tr>
+                            <td>{{ row[0] }}</td>
+                            <td>{{ row[1] }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+        </div>
+    </body>
+</html>
