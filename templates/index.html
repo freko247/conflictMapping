@@ -15,14 +15,14 @@
         <script>
             //Tooltip
             var div = d3.select("body").append("div")
-                .attr("class", "tooltip")
-            .style("opacity", 0.8);
+                      .attr("class", "tooltip")
+                      .style("opacity", 0.8);
             //SVG element and attributes.
-            var width = 1000;
-            var height = 600;
+            var width = 950;
+            var height = 400;
             var color = d3.scale.linear()
-                    .domain([0, 600])
-                    .range(["green", "red"]);
+                    .domain([0, {{ tweets_max }}])
+                    .range(["yellow", "red"]);
             var data_value = {{ tweets_country|safe}}
             console.log(data_value);
             var svg = d3.select("body").append("svg")
@@ -32,9 +32,9 @@
             group.attr('transorm', 'scale(.3, .3)');
 
             //Creates a projection which we can apply to the path.
-            var projection = d3.geo.mercator();
+            var projection = d3.geo.equirectangular();
 
-            d3.json("../static/world_map.json", function(world){
+            d3.json("../static/world_map_110m.json", function(world){
                 //Gets the coordinate data from our dataset.
                 var subunits = world.features[0].properties;
                //Allows us to check the validity of our data in the console.
@@ -43,13 +43,13 @@
                 group.selectAll('path').data(world.features)
                 .enter().append('path')
                 .attr('d', d3.geo.path().projection(projection))
-                .attr('id', function(d){return d.properties.GEOUNIT})
+                .attr('id', function(d){return d.properties.name})
                 .attr('value', function(d){
-                    c = data_value[d.properties.GEOUNIT]
+                    c = data_value[d.properties.name]
                     if (c) return c
                     else return 0;})
                 .style('fill', function(d){
-                    c = data_value[d.properties.GEOUNIT]
+                    c = data_value[d.properties.name]
                     if (c) return color(c)
                     else return 'grey';})
                 .style('stroke', 'white')
@@ -58,10 +58,9 @@
                 svg.selectAll("path").data(world.features)
                 .on("mouseover", function(d){
                     div.transition().duration(200);
-                    c = data_value[d.properties.GEOUNIT]
+                    c = data_value[d.properties.name]
                     if (!c) c = 0
-                    div.html("<b>" + d.properties.GEOUNIT  + "</b><br>"
-                    + "Population: " + d.properties.POP_EST + "<br>" +
+                    div.html("<b>" + d.properties.name  + "</b><br>" +
                     "Tweets: " + c)});
                 });
         </script>

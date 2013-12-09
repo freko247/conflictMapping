@@ -103,7 +103,7 @@ class MainHandler(tornado.web.RequestHandler):
         contents = {'links': links,
                     'tweets_count': tweets_count[0][0],
                     'tweets_country': dumps(dict(tweets_country)),
-                    # 'tweets_newest': tweets_newest[0][0].isoformat(),
+                    'tweets_max': dumps(tweets_country[0][1]),
                     # 'tweets_oldest': tweets_oldest[0][0].isoformat(),
                     # 'tweets_word': tweets_word,
                     }
