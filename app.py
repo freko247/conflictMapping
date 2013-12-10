@@ -17,8 +17,9 @@ import signal
 from docopt import docopt
 from jinja2 import Environment, FileSystemLoader
 # from sphinx.websupport import WebSupport
+from sqlalchemy import event, func
+from sqlalchemy.engine import Engine
 from sqlalchemy.orm import scoped_session, sessionmaker
-from sqlalchemy import func
 import tornado.httpserver
 import tornado.ioloop
 import tornado.options
@@ -33,6 +34,21 @@ template_dir = os.path.join(os.path.dirname(__file__), config.TEMPLATE_DIR)
 
 logger = None
 server = None
+
+
+@event.listens_for(Engine, "before_cursor_execute")
+def before_cursor_execute(conn, cursor, statement,
+                          parameters, context, executemany):
+    context._query_start_time = time.time()
+    logger.debug("Start Query: %s" % statement)
+
+
+@event.listens_for(Engine, "after_cursor_execute")
+def after_cursor_execute(conn, cursor, statement,
+                         parameters, context, executemany):
+    total = time.time() - context._query_start_time
+    logger.debug("Query Complete!")
+    logger.debug("Total Time: %f" % total)
 
 
 class Application(tornado.web.Application):
@@ -84,6 +100,9 @@ class MainHandler(tornado.web.RequestHandler):
         tweets_country = sorted(tweets_country,
                                 key=lambda tup: tup[1],
                                 reverse=True)
+        tweets_country = [(row[0].strip('"'), row[1])
+                          for row
+                          in tweets_country]
         # Tweets grouped by tweet_search_word with count
         tweets_word = self.db.query(Tweet.tweet_search_word,
                                     func.count(Tweet.tweet_id)).\
@@ -160,16 +179,18 @@ def main(arguments):
     global logger
     logger = logging.getLogger('app logger')
     logger.addHandler(logHandler)
-    logger.setLevel(logging.DEBUG)
 
     debug = arguments.get('debug')
     if debug:
         port = config.DEBUG_PORT
         logger.info('Starting server in debug mode!')
+        log_level = logging.DEBUG
         print 'Starting server in debug mode!'
     else:
         port = config.SERVER_PORT
         logger.info('Starting server!')
+        log_level = logging.INFO
+    logger.setLevel(log_level)
     logger.info('Tornado server ready at 127.0.0.1:%s (PID: %s)' %
                 (port, os.getpid()))
     global server
