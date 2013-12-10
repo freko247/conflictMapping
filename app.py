@@ -100,7 +100,7 @@ class MainHandler(tornado.web.RequestHandler):
                                                 'html_doc.7z')),
                  ('git', 'https://github.com/freko247/conflictMapping'),
                  ]
-        contents = {'links': links,
+        contents = {'links': dumps(links),
                     'tweets_count': tweets_count[0][0],
                     'tweets_country': dumps(dict(tweets_country)),
                     'tweets_max': dumps(tweets_country[0][1]),

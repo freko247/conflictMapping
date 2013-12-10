@@ -4,30 +4,54 @@
         <meta charset="utf-8">
         <script type="text/javascript" src="../static/d3/d3.v3.js"></script>
         <title>conflictMapping</title>
+        <style>
+            .center
+            {
+            margin:auto;
+            width:70%;
+            /*background-color:#b0e0e6;*/
+            min-width:960px;
+            position: relative;
+            }
+        </style>
     </head>
     <body>
-        <h1>conflictMapping</h1>
-        <div>
-            {% for item in links %}
-                <p><a href="{{ item[1] }}">{{ item[0] }}</a></p>
-            {% endfor %}
-        </div>
         <script>
+            // Data
+            var data_value = {{ tweets_country|safe}}
+            console.log(data_value);
+            var links = {{ links|safe }}
+            console.log(links);
+            //Body
+            var body = d3.select("body")
+            // Main div
+            var main_div = body.append("div")
+                            .attr("class", "center")
+            // Page header
+            main_div.append("h1").html("conflictMapping<br><br>")
+            .attr("class", "center")
+            // Map div
+            var map_div = main_div.append("div")
+                            .attr("class", "map_div")
             //Tooltip
-            var div = d3.select("body").append("div")
-                      .attr("class", "tooltip")
-                      .style("opacity", 0.8);
+            var tooltip = map_div.append("div")
+                      .attr("class", "center tooltip")
+                      .style("z-index", 2)
+                      .style("opacity", 0.8)
+                      .html('<b>N/A</b><br>N/A');
             //SVG element and attributes.
             var width = 950;
             var height = 400;
             var color = d3.scale.linear()
                     .domain([0, {{ tweets_max }}])
                     .range(["yellow", "red"]);
-            var data_value = {{ tweets_country|safe}}
-            console.log(data_value);
-            var svg = d3.select("body").append("svg")
+            // SVG
+            var svg = map_div.append("svg")
                       .attr("width", width)
-                      .attr("height", height);
+                      .attr("height", height)
+                      .attr("display", "block")
+                      .attr("class", "center");
+            // Group
             var group = svg.append('g')
             group.attr('transorm', 'scale(.3, .3)');
 
@@ -57,15 +81,27 @@
 
                 svg.selectAll("path").data(world.features)
                 .on("mouseover", function(d){
-                    div.transition().duration(200);
+                    tooltip.transition().duration(200);
                     c = data_value[d.properties.name]
                     if (!c) c = 0
-                    div.html("<b>" + d.properties.name  + "</b><br>" +
+                    tooltip.html("<b>" + d.properties.name  + "</b><br>" +
                     "Tweets: " + c)});
                 });
+            // Footer
+            main_div.append("footer")
+            .text('{{ tweets_count|safe }} tweets in database')
+            .attr("class", "center")
+            // Link div
+            var link_div = main_div.append("div")
+                            .attr("class", "center")
+            // Links
+            link_div.selectAll("a")
+            .data(links)
+            .enter()
+            .append("a")
+            .attr("href", function(l){return l[1];})
+            .attr("class", "center")
+            .html(function(l){return l[0] + "<br>"})
         </script>
-        <footer>
-            <p>{{ tweets_count }} tweets in database </p>
-        </footer>
     </body>
 </html>
